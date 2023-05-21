@@ -67,7 +67,8 @@ void fork_process(char **argv, int i)
             {
                     if (i != 1) // not more than one argument
                     {
-                        perror("./shell ")exit(EXIT_FAILURE);
+                        perror("./shell ");
+                        exit(EXIT_FAILURE);
                     }
                         
                     ex = execve(argv[0], argv, NULL);
