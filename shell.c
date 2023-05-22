@@ -19,7 +19,6 @@ int main()
             prompt();
             if (getline(&buf, &n, stdin) == -1)
             {
-                // printf("\n");
                 break; // handle EOF
             }
     
@@ -31,7 +30,6 @@ int main()
             argv[i] = NULL; //setting the last element to null
             
             fork_process(argv, i);
-                
         }
     free(buf);
     return (0);
