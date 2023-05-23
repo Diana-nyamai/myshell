@@ -17,12 +17,12 @@ int main()
         {
             i = 0;
             prompt();
-            if (getline(&buf, &n, stdin) == -1)
+            if (getline(&buf, &n, stdin) == EOF)
             {
                 break; // handle EOF
             }
     
-            buf[strlen(buf) - 1] = '\0'; //null terminating the input string
+            buf[_strlen(buf) - 1] = '\0'; //null terminating the input string
             
             for (token = strtok(buf, " "); token != NULL; token = strtok(NULL, " "))
                 argv[i++] = token;
@@ -43,7 +43,7 @@ void signalHandler(int sigint)
 
 void prompt()
 {
-        if (isatty(STDOUT_FILENO))
+        if (isatty(STDIN_FILENO))
         {
             write(STDOUT_FILENO, "#cisfun$ ", 9);
             fflush(stdout);
@@ -54,16 +54,17 @@ void fork_process(char **argv, int i)
 {
     pid_t pid;
     int ex;
+    char *path = get_env("PATH");
+   
     pid = fork(); //create a child process
             if (pid == -1)
             {
                 perror("fork");
                 exit(EXIT_FAILURE);
             }
-                
             if (pid == 0)
             {
-                    if (i != 1) // not more than one argument
+                    if (i < 1) // not more than one argument
                     {
                         perror("./shell ");
                         exit(EXIT_FAILURE);
@@ -72,10 +73,48 @@ void fork_process(char **argv, int i)
                     ex = execve(argv[0], argv, NULL);
                 
                     if (ex == -1)
-                        perror("./shell ");
+                    {
+                        handle_path(path, argv);
+                        perror("shell ");
+                        exit(EXIT_FAILURE);
+                    }
+                    exit(EXIT_FAILURE);
             }
             else
             {
                 wait(NULL); //parent waits for the child to finish
+            }
+}
+
+void handle_path(char *path, char **argv)
+{
+    char *dir, *command;
+    size_t path_len, dir_len, command_len;
+    int ex;
+    
+    dir = strtok(path, ":");
+            while (dir != NULL)
+            {
+
+                path_len = _strlen(dir);
+                dir_len = _strlen(argv[0]);
+                command_len = path_len + 1 + dir_len + 1; // +1 for '/' and +1 for null terminator
+                command = malloc(command_len);
+
+                _strncpy(command, dir, path_len);
+                command[path_len] = '/';
+                _strncpy(command + path_len + 1, argv[0], dir_len);
+                command[path_len + 1 + dir_len] = '\0';
+                // Check if the command is executable in the current directory
+                if (access(command, X_OK) == 0)
+                {
+                    ex = execve(command, argv, NULL);
+                    if (ex == -1)
+                        perror("shell ");
+                    exit(EXIT_FAILURE);
+                }
+
+                free(command);
+                dir = strtok(NULL, ":");
             }
 }

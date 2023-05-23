@@ -16,6 +16,7 @@ void prompt();
 void handle_path(char *path, char **argv);
 void fork_process();
 
+
 /*  CUSTOM FUNCTIONS */
 
 int _strlen(char *str);
