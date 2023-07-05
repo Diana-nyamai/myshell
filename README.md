@@ -1,6 +1,8 @@
 # My shell
 
 Welcome to the My Shell Project! This project aims to provide a simple shell program that mimics the functionality of the Linux shell. With this shell, you can execute commands, navigate directories, and perform various shell operations.
+## Demo
+![GIF](path/to/your/gif.gif)
 
 ## Features
 - Command Execution: Execute system commands just like in the Linux shell.
